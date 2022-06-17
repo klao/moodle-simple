@@ -861,7 +861,6 @@ $string['mobilenotconfiguredwarning'] = 'The Moodle app is not enabled.';
 $string['modeditdefaults'] = 'Default values for activity settings';
 $string['modsettings'] = 'Manage activities';
 $string['modulesecurity'] = 'Module security';
-$string['multilangforceold'] = 'Force old multilang syntax: &lt;span&gt; without the class="multilang" and &lt;lang&gt;';
 $string['mustenablestats'] = 'Statistics have not yet been enabled on this site.';
 $string['mycourses'] = 'My courses';
 $string['mycoursesperpage'] = 'Number of courses';
@@ -1327,6 +1326,7 @@ $string['task_duration'] = 'Duration';
 $string['task_dbstats'] = 'Database';
 $string['task_result'] = 'Result';
 $string['tasktype'] = 'Type';
+$string['tasklockcleanuptask'] = 'Clean up ad hoc task metadata';
 $string['taskadmintitle'] = 'Tasks';
 $string['taskanalyticscleanup'] = 'Analytics cleanup';
 $string['taskautomatedbackup'] = 'Automated backups';
@@ -1562,3 +1562,6 @@ $string['modchooserdefault'] = 'Activity chooser default';
 $string['coursepage'] = 'Course page';
 $string['mediapluginswf'] = 'Enable .swf filter';
 $string['mediapluginswfnote'] = 'As a default security measure, normal users should not be allowed to embed swf flash files.';
+
+// Deprecated since Moodle 4.1.
+$string['multilangforceold'] = 'Force old multilang syntax: &lt;span&gt; without the class="multilang" and &lt;lang&gt;';
