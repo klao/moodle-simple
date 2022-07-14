@@ -784,9 +784,9 @@ $string['loginpageautofocus'] = 'Autofocus login page form';
 $string['loginpageautofocus_help'] = 'Enabling this option improves usability of the login page, but automatically focusing fields may be considered an accessibility issue.';
 $string['loglifetime'] = 'Keep logs for';
 $string['logo'] = 'Logo';
-$string['logo_desc'] = 'A full logo to be used as decoration by some themes (such as core themes). This image can be quite high resolution because it will be scaled down for use (and cached for performance). Logos that are wider than they are high usually give better results. Formats accepted: PNG and JPG.';
+$string['logo_desc'] = 'A full logo to be used as decoration by some themes (such as core themes). This image can be quite high resolution because it will be scaled down for use (and cached for performance). Logos that are wider than they are high usually give better results.';
 $string['logocompact'] = 'Compact logo';
-$string['logocompact_desc'] = 'A compact version of the same logo as above, such as an emblem, shield or icon. The image should be clear even at small sizes. Formats accepted: PNG and JPG.';
+$string['logocompact_desc'] = 'A compact version of the same logo as above, such as an emblem, shield or icon. The image should be clear even at small sizes.';
 $string['logossettings'] = 'Logos';
 $string['logstorenotrequired'] = 'Log store not required';
 $string['logstoressupported'] = 'Log stores that support this report';
@@ -1551,10 +1551,6 @@ $string['cachesession'] = 'Session cache';
 $string['cachesessionhelp'] = 'User specific cache that expires when the user\'s session ends. Designed to alleviate session bloat/strain.';
 $string['cacheapplication'] = 'Application cache';
 $string['cacheapplicationhelp'] = 'Cached items are shared among all users and expire by a determined time to live (ttl).';
-
-// Deprecated since Moodle 3.9.
-$string['availablelicenses'] = 'Available licences';
-$string['managelicenses'] = 'Manage licences';
 
 // Deprecated since Moodle 3.11.
 $string['configenableactivitychooser'] = 'The activity chooser is a dialog box with a short description of each activity and resource. If disabled, separate resource and activity drop-down menus are provided instead.';
