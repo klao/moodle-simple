@@ -16,13 +16,14 @@
 
 declare(strict_types=1);
 
-namespace core_reportbuilder\external\filters;
+namespace core_reportbuilder\external\reports;
 
 use core_reportbuilder_generator;
-use core_reportbuilder\manager;
-use core_reportbuilder\report_access_exception;
 use external_api;
 use externallib_advanced_testcase;
+use core_reportbuilder\event\report_viewed;
+use core_reportbuilder\report_access_exception;
+use core_reportbuilder\local\models\report;
 use core_user\reportbuilder\datasource\users;
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,14 +32,14 @@ global $CFG;
 require_once("{$CFG->dirroot}/webservice/tests/helpers.php");
 
 /**
- * Unit tests external filters reset class
+ * Unit tests of external class for viewing reports
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\filters\reset
- * @copyright   2021 Paul Holden <paulh@moodle.com>
+ * @covers      \core_reportbuilder\external\reports\view
+ * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reset_test extends externallib_advanced_testcase {
+class view_test extends externallib_advanced_testcase {
 
     /**
      * Text execute method
@@ -51,23 +52,34 @@ class reset_test extends externallib_advanced_testcase {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
         $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
 
-        $instance = manager::get_report_from_persistent($report);
-        $instance->set_filter_values([
-            'entity:filter_operator' => 'something',
-            'entity:filter_value' => 42,
-        ]);
+        // Catch the events.
+        $sink = $this->redirectEvents();
 
-        $result = reset::execute($report->get('id'));
-        $result = external_api::clean_returnvalue(reset::execute_returns(), $result);
+        $result = view::execute($report->get('id'));
+        $result = external_api::clean_returnvalue(view::execute_returns(), $result);
 
-        $this->assertTrue($result);
+        $events = $sink->get_events();
+        $this->assertCount(1, $events);
+        $sink->close();
 
-        // We should get an empty array back.
-        $this->assertEquals([], $instance->get_filter_values());
+        $this->assertValidKeys($result, ['status', 'warnings']);
+        $this->assertTrue($result['status']);
+        $this->assertEmpty($result['warnings']);
+
+        // Validate the event.
+        $this->assertCount(1, $events);
+
+        $event = reset($events);
+        $this->assertInstanceOf(report_viewed::class, $event);
+        $this->assertEquals(report::TABLE, $event->objecttable);
+        $this->assertEquals($report->get('id'), $event->objectid);
+        $this->assertEquals($report->get('name'), $event->other['name']);
+        $this->assertEquals($report->get('source'), $event->other['source']);
+        $this->assertEquals($report->get_context()->id, $event->contextid);
     }
 
     /**
-     * Test execute method for a user without permission to view the report
+     * Test execute method for a user without permission to view reports
      */
     public function test_execute_access_exception(): void {
         $this->resetAfterTest();
@@ -81,6 +93,6 @@ class reset_test extends externallib_advanced_testcase {
 
         $this->expectException(report_access_exception::class);
         $this->expectExceptionMessage('You cannot view this report');
-        reset::execute($report->get('id'));
+        view::execute($report->get('id'));
     }
 }

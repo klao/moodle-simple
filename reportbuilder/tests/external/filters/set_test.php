@@ -31,14 +31,14 @@ global $CFG;
 require_once("{$CFG->dirroot}/webservice/tests/helpers.php");
 
 /**
- * Unit tests external filters reset class
+ * Unit tests external filters set class
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\filters\reset
- * @copyright   2021 Paul Holden <paulh@moodle.com>
+ * @covers      \core_reportbuilder\external\filters\set
+ * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reset_test extends externallib_advanced_testcase {
+class set_test extends externallib_advanced_testcase {
 
     /**
      * Text execute method
@@ -51,19 +51,19 @@ class reset_test extends externallib_advanced_testcase {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
         $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
 
-        $instance = manager::get_report_from_persistent($report);
-        $instance->set_filter_values([
+        $values = [
             'entity:filter_operator' => 'something',
             'entity:filter_value' => 42,
-        ]);
+        ];
 
-        $result = reset::execute($report->get('id'));
-        $result = external_api::clean_returnvalue(reset::execute_returns(), $result);
+        $result = set::execute($report->get('id'), '', json_encode($values));
+        $result = external_api::clean_returnvalue(set::execute_returns(), $result);
 
         $this->assertTrue($result);
 
-        // We should get an empty array back.
-        $this->assertEquals([], $instance->get_filter_values());
+        // We should get our original filter values back.
+        $instance = manager::get_report_from_persistent($report);
+        $this->assertEquals($values, $instance->get_filter_values());
     }
 
     /**
@@ -81,6 +81,6 @@ class reset_test extends externallib_advanced_testcase {
 
         $this->expectException(report_access_exception::class);
         $this->expectExceptionMessage('You cannot view this report');
-        reset::execute($report->get('id'));
+        set::execute($report->get('id'), '', json_encode(['foo' => 1]));
     }
 }

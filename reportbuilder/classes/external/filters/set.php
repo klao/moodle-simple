@@ -23,7 +23,6 @@ use external_function_parameters;
 use external_value;
 use core_reportbuilder\manager;
 use core_reportbuilder\permission;
-use core_reportbuilder\local\helpers\user_filter_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,13 +30,13 @@ global $CFG;
 require_once("{$CFG->libdir}/externallib.php");
 
 /**
- * External method for resetting report filters
+ * External method for setting report filter values
  *
  * @package     core_reportbuilder
- * @copyright   2021 Paul Holden <paulh@moodle.com>
+ * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reset extends external_api {
+class set extends external_api {
 
     /**
      * External method parameters
@@ -48,6 +47,7 @@ class reset extends external_api {
         return new external_function_parameters([
             'reportid' => new external_value(PARAM_INT, 'Report ID'),
             'parameters' => new external_value(PARAM_RAW, 'JSON encoded report parameters', VALUE_DEFAULT, ''),
+            'values' => new external_value(PARAM_RAW, 'JSON encoded filter values'),
         ]);
     }
 
@@ -55,17 +55,19 @@ class reset extends external_api {
      * External method execution
      *
      * @param int $reportid
-     * @param string $parameters JSON encoded parameters used to re-create the report, for instance for those reports that
-     *      require parameters as part of their {@see \core_reportbuilder\system_report::can_view} implementation
+     * @param string $parameters
+     * @param string $values
      * @return bool
      */
-    public static function execute(int $reportid, string $parameters = ''): bool {
+    public static function execute(int $reportid, string $parameters, string $values): bool {
         [
             'reportid' => $reportid,
             'parameters' => $parameters,
+            'values' => $values,
         ] = self::validate_parameters(self::execute_parameters(), [
             'reportid' => $reportid,
             'parameters' => $parameters,
+            'values' => $values,
         ]);
 
         $report = manager::get_report_from_id($reportid, (array) json_decode($parameters));
@@ -77,7 +79,7 @@ class reset extends external_api {
             permission::require_can_view_report($persistent);
         }
 
-        return user_filter_manager::reset_all($reportid);
+        return $report->set_filter_values((array) json_decode($values));
     }
 
     /**

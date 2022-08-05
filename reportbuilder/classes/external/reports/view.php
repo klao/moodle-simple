@@ -16,28 +16,29 @@
 
 declare(strict_types=1);
 
-namespace core_reportbuilder\external\filters;
+namespace core_reportbuilder\external\reports;
 
 use external_api;
 use external_function_parameters;
+use external_single_structure;
 use external_value;
+use external_warnings;
 use core_reportbuilder\manager;
 use core_reportbuilder\permission;
-use core_reportbuilder\local\helpers\user_filter_manager;
+use core_reportbuilder\event\report_viewed;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
 require_once("{$CFG->libdir}/externallib.php");
 
 /**
- * External method for resetting report filters
+ * External method to record the viewing of a report
  *
  * @package     core_reportbuilder
- * @copyright   2021 Paul Holden <paulh@moodle.com>
+ * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reset extends external_api {
+class view extends external_api {
 
     /**
      * External method parameters
@@ -47,7 +48,6 @@ class reset extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'reportid' => new external_value(PARAM_INT, 'Report ID'),
-            'parameters' => new external_value(PARAM_RAW, 'JSON encoded report parameters', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -55,37 +55,39 @@ class reset extends external_api {
      * External method execution
      *
      * @param int $reportid
-     * @param string $parameters JSON encoded parameters used to re-create the report, for instance for those reports that
-     *      require parameters as part of their {@see \core_reportbuilder\system_report::can_view} implementation
-     * @return bool
+     * @return array
      */
-    public static function execute(int $reportid, string $parameters = ''): bool {
+    public static function execute(int $reportid): array {
         [
             'reportid' => $reportid,
-            'parameters' => $parameters,
         ] = self::validate_parameters(self::execute_parameters(), [
             'reportid' => $reportid,
-            'parameters' => $parameters,
         ]);
 
-        $report = manager::get_report_from_id($reportid, (array) json_decode($parameters));
+        $report = manager::get_report_from_id($reportid);
         self::validate_context($report->get_context());
 
-        // System report permission is implicitly handled, we need to make sure custom report can be viewed.
         $persistent = $report->get_report_persistent();
-        if ($persistent->get('type') === $report::TYPE_CUSTOM_REPORT) {
-            permission::require_can_view_report($persistent);
-        }
+        permission::require_can_view_report($persistent);
 
-        return user_filter_manager::reset_all($reportid);
+        // Trigger the report viewed event.
+        report_viewed::create_from_object($persistent)->trigger();
+
+        return [
+           'status' => true,
+           'warnings' => [],
+        ];
     }
 
     /**
      * External method return value
      *
-     * @return external_value
+     * @return external_single_structure
      */
-    public static function execute_returns(): external_value {
-        return new external_value(PARAM_BOOL, 'Success');
+    public static function execute_returns(): external_single_structure {
+        return new external_single_structure([
+            'status' => new external_value(PARAM_BOOL, 'Success'),
+            'warnings' => new external_warnings(),
+        ]);
     }
 }
