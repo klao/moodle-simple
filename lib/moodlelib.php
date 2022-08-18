@@ -206,7 +206,10 @@ define('PARAM_RAW_TRIMMED', 'raw_trimmed');
 define('PARAM_SAFEDIR',  'safedir');
 
 /**
- * PARAM_SAFEPATH - several PARAM_SAFEDIR joined by "/", suitable for include() and require(), plugin paths, etc.
+ * PARAM_SAFEPATH - several PARAM_SAFEDIR joined by "/", suitable for include() and require(), plugin paths
+ * and other references to Moodle code files.
+ *
+ * This is NOT intended to be used for absolute paths or any user uploaded files.
  */
 define('PARAM_SAFEPATH',  'safepath');
 
@@ -1004,18 +1007,8 @@ function clean_param($param, $type) {
             return preg_replace('/[^a-zA-Z0-9_-]/i', '', $param);
 
         case PARAM_SAFEPATH:
-            // Replace MS \ separators.
-            $param = str_replace('\\', '/', $param);
-            // Remove any number of ../ to prevent path traversal.
-            $param = preg_replace('/\.\.+\//', '', $param);
-            // Remove everything not a-zA-Z0-9/:_- .
-            $param = preg_replace('/[^a-zA-Z0-9\/:_-]/i', '', $param);
-            // Remove leading slash.
-            $param = ltrim($param, '/');
-            if ($param === '.') {
-                $param = '';
-            }
-            return $param;
+            // Remove everything not a-zA-Z0-9/_- .
+            return preg_replace('/[^a-zA-Z0-9\/_-]/i', '', $param);
 
         case PARAM_FILE:
             // Strip all suspicious characters from filename.
@@ -7087,7 +7080,7 @@ function clean_filename($string) {
  * @return string
  */
 function current_language() {
-    global $CFG, $USER, $SESSION, $COURSE;
+    global $CFG, $PAGE, $SESSION, $USER;
 
     if (!empty($SESSION->forcelang)) {
         // Allows overriding course-forced language (useful for admins to check
@@ -7096,9 +7089,13 @@ function current_language() {
         // specific language (see force_current_language()).
         $return = $SESSION->forcelang;
 
-    } else if (!empty($COURSE->id) and $COURSE->id != SITEID and !empty($COURSE->lang)) {
+    } else if (!empty($PAGE->cm->lang)) {
+        // Activity language, if set.
+        $return = $PAGE->cm->lang;
+
+    } else if (!empty($PAGE->course->id) && $PAGE->course->id != SITEID && !empty($PAGE->course->lang)) {
         // Course language can override all other settings for this page.
-        $return = $COURSE->lang;
+        $return = $PAGE->course->lang;
 
     } else if (!empty($SESSION->lang)) {
         // Session language can override other settings.
@@ -7151,7 +7148,7 @@ function force_current_language($language) {
     global $SESSION;
     $sessionforcelang = isset($SESSION->forcelang) ? $SESSION->forcelang : '';
     if ($language !== $sessionforcelang) {
-        // Seting forcelang to null or an empty string disables it's effect.
+        // Setting forcelang to null or an empty string disables its effect.
         if (empty($language) || get_string_manager()->translation_exists($language, false)) {
             $SESSION->forcelang = $language;
             moodle_setlocale();

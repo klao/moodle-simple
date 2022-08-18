@@ -193,6 +193,19 @@ class manager {
     }
 
     /**
+     * Return if the database has fields.
+     *
+     * @return bool true if the database has fields
+     */
+    public function has_fields(): bool {
+        global $DB;
+        if ($this->_fieldrecords === null) {
+            return $DB->record_exists('data_fields', ['dataid' => $this->instance->id]);
+        }
+        return !empty($this->_fieldrecords);
+    }
+
+    /**
      * Return the database fields.
      *
      * @return data_field_base[] the field instances.
@@ -228,10 +241,13 @@ class manager {
     public function get_field(stdClass $fieldrecord): data_field_base {
         $filepath = "{$this->path}/field/{$fieldrecord->type}/field.class.php";
         $classname = "data_field_{$fieldrecord->type}";
-        if (!file_exists($filepath) || !class_exists($classname)) {
+        if (!file_exists($filepath)) {
             return new data_field_base($fieldrecord, $this->instance, $this->cm);
         }
         require_once($filepath);
+        if (!class_exists($classname)) {
+            return new data_field_base($fieldrecord, $this->instance, $this->cm);
+        }
         $newfield = new $classname($fieldrecord, $this->instance, $this->cm);
         return $newfield;
     }
