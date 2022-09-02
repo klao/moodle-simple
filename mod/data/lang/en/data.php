@@ -24,6 +24,7 @@
  */
 
 $string['action'] = 'Action';
+$string['actionsmenu'] = 'Actions menu';
 $string['add'] = 'Add entry';
 $string['addcomment'] = 'Add comment';
 $string['addentries'] = 'Add entries';
@@ -388,6 +389,7 @@ $string['selectedrequired'] = 'All selected required';
 $string['selectfields'] = 'Select fields';
 $string['selectexportoptions'] = 'Select export options';
 $string['showall'] = 'Show all entries';
+$string['showmore'] = 'Show more';
 $string['single'] = 'View single';
 $string['singleview'] = 'Single view';
 $string['singletemplate'] = 'Single template';
@@ -410,7 +412,6 @@ $string['timemodified'] = 'Time modified';
 $string['todatabase'] = 'to this database.';
 $string['type'] = 'Field type';
 $string['undefinedprocessactionmethod'] = 'No action method defined in Data_Preset to handle action "{$a}".';
-$string['underconstruction_title'] = 'Under construction';
 $string['unsupportedfields'] = 'Unsupported fields';
 $string['unsupportedfieldslist'] = 'The following fields cannot be exported:';
 $string['updatefield'] = 'Update an existing field';
