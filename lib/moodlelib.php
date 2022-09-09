@@ -786,13 +786,13 @@ function validate_param($param, $type, $allownull=NULL_NOT_ALLOWED, $debuginfo='
  * $options = clean_param($options, PARAM_INT);
  * </code>
  *
- * @param array $param the variable array we are cleaning
+ * @param array|null $param the variable array we are cleaning
  * @param string $type expected format of param after cleaning.
  * @param bool $recursive clean recursive arrays
  * @return array
  * @throws coding_exception
  */
-function clean_param_array(array $param = null, $type, $recursive = false) {
+function clean_param_array(?array $param, $type, $recursive = false) {
     // Convert null to empty array.
     $param = (array)$param;
     foreach ($param as $key => $value) {
@@ -4555,9 +4555,10 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
  * - this function does not set any cookies any more!
  *
  * @param stdClass $user
+ * @param array $extrauserinfo
  * @return stdClass A {@link $USER} object - BC only, do not use
  */
-function complete_user_login($user) {
+function complete_user_login($user, array $extrauserinfo = []) {
     global $CFG, $DB, $USER, $SESSION;
 
     \core\session\manager::login_user($user);
@@ -4577,7 +4578,10 @@ function complete_user_login($user) {
         array(
             'userid' => $USER->id,
             'objectid' => $USER->id,
-            'other' => array('username' => $USER->username),
+            'other' => [
+                'username' => $USER->username,
+                'extrauserinfo' => $extrauserinfo
+            ]
         )
     );
     $event->trigger();

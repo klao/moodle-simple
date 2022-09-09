@@ -96,7 +96,7 @@ $string['data:exportuserinfo'] = 'Export user information';
 $string['data:managecomments'] = 'Manage comments';
 $string['data:manageentries'] = 'Manage entries';
 $string['data:managetemplates'] = 'Manage templates';
-$string['data:manageuserpresets'] = 'Manage all template presets';
+$string['data:manageuserpresets'] = 'Manage presets';
 $string['data:rate'] = 'Rate entries';
 $string['data:readentry'] = 'Read entries';
 $string['data:viewalluserpresets'] = 'View presets from all users';
@@ -115,11 +115,12 @@ $string['delcheck'] = 'Bulk delete checkbox';
 $string['delete'] = 'Delete';
 $string['deleteallentries'] = 'Delete all entries';
 $string['deletecomment'] = 'Are you sure you want to delete this comment?';
+$string['deleteconfirm'] = 'Delete preset {$a}?';
 $string['deleted'] = 'deleted';
 $string['deleteentry'] = 'Delete entry';
 $string['deletefield'] = 'Delete field';
 $string['deletenotenrolled'] = 'Delete entries by users not enrolled';
-$string['deletewarning'] = 'Are you sure you want to delete this preset?';
+$string['deletewarning'] = 'Deleting a preset removes it from the list of available presets in all courses.';
 $string['descending'] = 'Descending';
 $string['directorynotapreset'] = '{$a->directory} Not a preset: missing files: {$a->missing_files}';
 $string['disapprove'] = 'Undo approval';
@@ -163,7 +164,7 @@ $string['exportformat'] = 'Export format';
 $string['exportoptions'] = 'Export options';
 $string['exportownentries'] = 'Export your own entries only? ({$a->mine}/{$a->all})';
 $string['exportpreset'] = 'Export preset';
-$string['failedpresetdelete'] = 'Error deleting a preset!';
+$string['failedpresetdelete'] = 'An error was encountered while trying to delete the preset.';
 $string['fieldadded'] = 'Field added';
 $string['fieldallowautolink'] = 'Allow autolink';
 $string['fielddeleted'] = 'Field deleted';
@@ -205,7 +206,7 @@ $string['headerjstemplate'] = 'Defines custom Javascript for manipulating the wa
 $string['headerlisttemplate'] = 'Defines browsing interface for multiple entries';
 $string['headerrsstemplate'] = 'Defines appearance of entries in RSS feeds';
 $string['headersingletemplate'] = 'Defines browsing interface for a single entry';
-$string['checkbox'] = 'Checkbox';
+$string['checkbox'] = 'Checkboxes';
 $string['id'] = 'Entry ID';
 $string['chooseexportfields'] = 'Choose the fields you wish to export';
 $string['chooseexportformat'] = 'Choose the format you wish to export to';
@@ -240,7 +241,7 @@ $string['invalidrecord'] = 'Incorrect record';
 $string['invalidurl'] = 'The URL you just entered is not valid';
 $string['jstemplate'] = 'Javascript template';
 $string['latitude'] = 'Latitude';
-$string['latlong'] = 'Latitude/longitude';
+$string['latlong'] = 'Coordinates';
 $string['latlongboth'] = 'Both latitude and longitude are required.';
 $string['latlongdownloadallhint'] = 'Download link for all entries as KML';
 $string['latlongkmllabelling'] = 'How to label items in KML files (Google Earth)';
@@ -264,18 +265,18 @@ $string['menuchoose'] = 'Choose...';
 $string['missingdata'] = 'Data id or object must be provided to field class';
 $string['missingfield'] = 'Programmer error: You must specify field and/or data when defining field class.';
 $string['modulename'] = 'Database';
-$string['modulename_help'] = 'The database activity module enables participants to create, maintain and search a collection of entries (i.e. records).  The structure of the entries is defined by the teacher as a number of fields. Field types include checkbox, radio buttons, drop-down menu, text area, URL, picture and uploaded file.
+$string['modulename_help'] = 'Database enables participants to create, maintain, and search a collection of entries.
 
-The visual layout of information when listing, viewing or editing database entries may be controlled by database templates. Database activities may be shared between courses as presets and a teacher may also import and export database entries.
+The structure of the entries is defined using different types of fields, such as short text, dropdown list, text area, URL, image, or file.
 
-If the database auto-linking filter is enabled, any entries in a database will be automatically linked where the words or phrases appear within the course.
+As a teacher, you can comment and rate entries. You can also allow students to rate and comment on entries (peer evaluation). Ratings can be aggregated to form a final grade, which is recorded in the gradebook.
 
-A teacher can allow comments on entries. Entries can also be rated by teachers or students (peer evaluation). Ratings can be aggregated to form a final grade which is recorded in the gradebook.
+If the Database auto-linking filter is enabled, any entries in a database will be automatically linked where the words or phrases appear within the course.
 
-Database activities have many uses, such as
+You can use Database to:
 
-* A collaborative collection of web links, books, book reviews, journal references etc
-* For displaying student-created photos, posters, websites or poems for peer comment and review.';
+* Create a collaborative collection of links, books, book reviews, journal references, etc.
+* Display student-created photos, posters, websites or poems for peer comment and review.';
 $string['modulename_link'] = 'mod/data/view';
 $string['modulenameplural'] = 'Databases';
 $string['more'] = 'More';
@@ -321,6 +322,7 @@ $string['pleaseaddsome'] = 'Please create some below or <a href="{$a}">choose a 
 $string['pluginadministration'] = 'Database activity administration';
 $string['pluginname'] = 'Database';
 $string['portfolionotfile'] = 'Export to a portfolio rather than a file (csv and leap2a only)';
+$string['presetdeleted'] = 'Preset deleted.';
 $string['presetinfo'] = 'Saving as a preset will publish this template. Other users may be able to use it in their databases.';
 $string['presetnotselected'] = 'No preset has been selected.';
 $string['presets'] = 'Presets';
@@ -406,7 +408,7 @@ $string['templates'] = 'Templates';
 $string['templatesnavigation'] = 'Templates tertiary navigation';
 $string['templatesaved'] = 'Template saved';
 $string['text'] = 'Text';
-$string['textarea'] = 'Textarea';
+$string['textarea'] = 'Text area';
 $string['timeadded'] = 'Time added';
 $string['timemodified'] = 'Time modified';
 $string['todatabase'] = 'to this database.';
