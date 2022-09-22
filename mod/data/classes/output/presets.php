@@ -72,7 +72,7 @@ class presets implements templatable, renderable {
         $presets = $this->get_presets($output);
         return [
             'd' => $this->id,
-            'formactionul' => $this->formactionurl->out(),
+            'formactionurl' => $this->formactionurl->out(),
             'showmanage' => $this->manage,
             'presets' => $presets,
         ];
@@ -100,9 +100,16 @@ class presets implements templatable, renderable {
             }
             $actions = $this->get_preset_action_menu($output, $preset, $userid);
 
+            $fullname = "{$userid}/{$preset->shortname}";
+            $previewurl = new moodle_url(
+                '/mod/data/preset.php',
+                ['d' => $this->id, 'fullname' => $fullname, 'action' => 'preview']
+            );
+
             $presets[] = [
                 'id' => $this->id,
                 'name' => $preset->name,
+                'url' => $previewurl->out(),
                 'shortname' => $preset->shortname,
                 'fullname' => $presetname,
                 'description' => $preset->description,
@@ -135,8 +142,9 @@ class presets implements templatable, renderable {
             $actionmenu->set_action_label(get_string('actions'));
             $actionmenu->attributes['class'] .= ' presets-actions';
 
-            // Only users with mod/data:manageuserpresets capability have options to edit the preset.
-            if ($preset->can_manage()) {
+            $canmanage = $preset->can_manage();
+            // Edit.
+            if ($canmanage) {
                 $params = [
                     'd' => $this->id,
                     'action' => 'edit',
@@ -155,7 +163,23 @@ class presets implements templatable, renderable {
                     $attributes
                 ));
 
-                // Delete.
+            }
+
+            // Export.
+            $params = [
+                'd' => $this->id,
+                'presetname' => $preset->name,
+                'action' => 'export',
+            ];
+            $exporturl = new moodle_url('/mod/data/preset.php', $params);
+            $actionmenu->add(new action_menu_link_secondary(
+                $exporturl,
+                null,
+                get_string('export', 'mod_data'),
+            ));
+
+            // Delete.
+            if ($canmanage) {
                 $params = [
                     'd' => $this->id,
                     'action' => 'delete',
