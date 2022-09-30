@@ -844,7 +844,7 @@ function clean_param($param, $type) {
 
         case PARAM_RAW_TRIMMED:
             // No cleaning, but strip leading and trailing whitespace.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             return trim($param);
 
         case PARAM_CLEAN:
@@ -859,7 +859,7 @@ function clean_param($param, $type) {
 
         case PARAM_CLEANHTML:
             // Clean html fragment.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             // Sweep for scripts, etc.
             $param = clean_text($param, FORMAT_HTML);
             return trim($param);
@@ -878,27 +878,27 @@ function clean_param($param, $type) {
 
         case PARAM_ALPHA:
             // Remove everything not `a-z`.
-            return preg_replace('/[^a-zA-Z]/i', '', $param);
+            return preg_replace('/[^a-zA-Z]/i', '', (string)$param);
 
         case PARAM_ALPHAEXT:
             // Remove everything not `a-zA-Z_-` (originally allowed "/" too).
-            return preg_replace('/[^a-zA-Z_-]/i', '', $param);
+            return preg_replace('/[^a-zA-Z_-]/i', '', (string)$param);
 
         case PARAM_ALPHANUM:
             // Remove everything not `a-zA-Z0-9`.
-            return preg_replace('/[^A-Za-z0-9]/i', '', $param);
+            return preg_replace('/[^A-Za-z0-9]/i', '', (string)$param);
 
         case PARAM_ALPHANUMEXT:
             // Remove everything not `a-zA-Z0-9_-`.
-            return preg_replace('/[^A-Za-z0-9_-]/i', '', $param);
+            return preg_replace('/[^A-Za-z0-9_-]/i', '', (string)$param);
 
         case PARAM_SEQUENCE:
             // Remove everything not `0-9,`.
-            return preg_replace('/[^0-9,]/i', '', $param);
+            return preg_replace('/[^0-9,]/i', '', (string)$param);
 
         case PARAM_BOOL:
             // Convert to 1 or 0.
-            $tempstr = strtolower($param);
+            $tempstr = strtolower((string)$param);
             if ($tempstr === 'on' or $tempstr === 'yes' or $tempstr === 'true') {
                 $param = 1;
             } else if ($tempstr === 'off' or $tempstr === 'no'  or $tempstr === 'false') {
@@ -911,7 +911,7 @@ function clean_param($param, $type) {
         case PARAM_NOTAGS:
             // Strip all tags.
             $param = fix_utf8($param);
-            return strip_tags($param);
+            return strip_tags((string)$param);
 
         case PARAM_TEXT:
             // Leave only tags needed for multilang.
@@ -919,7 +919,7 @@ function clean_param($param, $type) {
             // If the multilang syntax is not correct we strip all tags because it would break xhtml strict which is required
             // for accessibility standards please note this cleaning does not strip unbalanced '>' for BC compatibility reasons.
             do {
-                if (strpos($param, '</lang>') !== false) {
+                if (strpos((string)$param, '</lang>') !== false) {
                     // Old and future mutilang syntax.
                     $param = strip_tags($param, '<lang>');
                     if (!preg_match_all('/<.*>/suU', $param, $matches)) {
@@ -946,7 +946,7 @@ function clean_param($param, $type) {
                     }
                     return $param;
 
-                } else if (strpos($param, '</span>') !== false) {
+                } else if (strpos((string)$param, '</span>') !== false) {
                     // Current problematic multilang syntax.
                     $param = strip_tags($param, '<span>');
                     if (!preg_match_all('/<.*>/suU', $param, $matches)) {
@@ -975,11 +975,12 @@ function clean_param($param, $type) {
                 }
             } while (false);
             // Easy, just strip all tags, if we ever want to fix orphaned '&' we have to do that in format_string().
-            return strip_tags($param);
+            return strip_tags((string)$param);
 
         case PARAM_COMPONENT:
             // We do not want any guessing here, either the name is correct or not
             // please note only normalised component names are accepted.
+            $param = (string)$param;
             if (!preg_match('/^[a-z][a-z0-9]*(_[a-z][a-z0-9_]*)?[a-z0-9]+$/', $param)) {
                 return '';
             }
@@ -1004,15 +1005,15 @@ function clean_param($param, $type) {
 
         case PARAM_SAFEDIR:
             // Remove everything not a-zA-Z0-9_- .
-            return preg_replace('/[^a-zA-Z0-9_-]/i', '', $param);
+            return preg_replace('/[^a-zA-Z0-9_-]/i', '', (string)$param);
 
         case PARAM_SAFEPATH:
             // Remove everything not a-zA-Z0-9/_- .
-            return preg_replace('/[^a-zA-Z0-9\/_-]/i', '', $param);
+            return preg_replace('/[^a-zA-Z0-9\/_-]/i', '', (string)$param);
 
         case PARAM_FILE:
             // Strip all suspicious characters from filename.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             $param = preg_replace('~[[:cntrl:]]|[&<>"`\|\':\\\\/]~u', '', $param);
             if ($param === '.' || $param === '..') {
                 $param = '';
@@ -1021,7 +1022,7 @@ function clean_param($param, $type) {
 
         case PARAM_PATH:
             // Strip all suspicious characters from file path.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             $param = str_replace('\\', '/', $param);
 
             // Explode the path and clean each element using the PARAM_FILE rules.
@@ -1043,7 +1044,7 @@ function clean_param($param, $type) {
 
         case PARAM_HOST:
             // Allow FQDN or IPv4 dotted quad.
-            $param = preg_replace('/[^\.\d\w-]/', '', $param );
+            $param = preg_replace('/[^\.\d\w-]/', '', (string)$param );
             // Match ipv4 dotted quad.
             if (preg_match('/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/', $param, $match)) {
                 // Confirm values are ok.
@@ -1067,7 +1068,7 @@ function clean_param($param, $type) {
 
         case PARAM_URL:
             // Allow safe urls.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             include_once($CFG->dirroot . '/lib/validateurlsyntax.php');
             if (!empty($param) && validateUrlSyntax($param, 's?H?S?F?E-u-P-a?I?p?f?q?r?')) {
                 // All is ok, param is respected.
@@ -1100,7 +1101,7 @@ function clean_param($param, $type) {
             return $param;
 
         case PARAM_PEM:
-            $param = trim($param);
+            $param = trim((string)$param);
             // PEM formatted strings may contain letters/numbers and the symbols:
             //   forward slash: /
             //   plus sign:     +
@@ -1148,7 +1149,7 @@ function clean_param($param, $type) {
             }
 
         case PARAM_TAG:
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             // Please note it is not safe to use the tag name directly anywhere,
             // it must be processed with s(), urlencode() before embedding anywhere.
             // Remove some nasties.
@@ -1159,7 +1160,7 @@ function clean_param($param, $type) {
             return $param;
 
         case PARAM_TAGLIST:
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             $tags = explode(',', $param);
             $result = array();
             foreach ($tags as $tag) {
@@ -1222,7 +1223,7 @@ function clean_param($param, $type) {
             }
 
         case PARAM_USERNAME:
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             $param = trim($param);
             // Convert uppercase to lowercase MDL-16919.
             $param = core_text::strtolower($param);
@@ -1236,14 +1237,14 @@ function clean_param($param, $type) {
 
         case PARAM_EMAIL:
             $param = fix_utf8($param);
-            if (validate_email($param)) {
+            if (validate_email($param ?? '')) {
                 return $param;
             } else {
                 return '';
             }
 
         case PARAM_STRINGID:
-            if (preg_match('|^[a-zA-Z][a-zA-Z0-9\.:/_-]*$|', $param)) {
+            if (preg_match('|^[a-zA-Z][a-zA-Z0-9\.:/_-]*$|', (string)$param)) {
                 return $param;
             } else {
                 return '';
@@ -1251,7 +1252,7 @@ function clean_param($param, $type) {
 
         case PARAM_TIMEZONE:
             // Can be int, float(with .5 or .0) or string seperated by '/' and can have '-_'.
-            $param = fix_utf8($param);
+            $param = (string)fix_utf8($param);
             $timezonepattern = '/^(([+-]?(0?[0-9](\.[5|0])?|1[0-3](\.0)?|1[0-2]\.5))|(99)|[[:alnum:]]+(\/?[[:alpha:]_-])+)$/';
             if (preg_match($timezonepattern, $param)) {
                 return $param;
@@ -1390,7 +1391,7 @@ function get_host_from_url($url) {
  * images, objects, etc.
  */
 function html_is_blank($string) {
-    return trim(strip_tags($string, '<img><object><applet><input><select><textarea><hr>')) == '';
+    return trim(strip_tags((string)$string, '<img><object><applet><input><select><textarea><hr>')) == '';
 }
 
 /**
@@ -5189,6 +5190,10 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
                         question_delete_activity($cm);
                         // Notify the competency subsystem.
                         \core_competency\api::hook_course_module_deleted($cm);
+
+                        // Delete all tag instances associated with the instance of this module.
+                        core_tag_tag::delete_instances("mod_{$modname}", null, context_module::instance($cm->id)->id);
+                        core_tag_tag::remove_all_item_tags('core', 'course_modules', $cm->id);
                     }
                     if (function_exists($moddelete)) {
                         // This purges all module data in related tables, extra user prefs, settings, etc.
@@ -7333,7 +7338,7 @@ function get_string($identifier, $component = '', $a = null, $lazyload = false) 
         debugging('extralocations parameter in get_string() is not supported any more, please use standard lang locations only.');
     }
 
-    if (strpos($component, '/') !== false) {
+    if (strpos((string)$component, '/') !== false) {
         debugging('The module name you passed to get_string is the deprecated format ' .
                 'like mod/mymod or block/myblock. The correct form looks like mymod, or block_myblock.' , DEBUG_DEVELOPER);
         $componentpath = explode('/', $component);
@@ -8802,7 +8807,7 @@ function format_float($float, $decimalpoints=1, $localized=true, $stripzeros=fal
  * @return mixed float|bool - false or the parsed float.
  */
 function unformat_float($localefloat, $strict = false) {
-    $localefloat = trim($localefloat);
+    $localefloat = trim((string)$localefloat);
 
     if ($localefloat == '') {
         return null;
@@ -9621,6 +9626,15 @@ function get_performance_info() {
         $info['txt'] .= $si['txt'];
     }
 
+    // Display time waiting for session if applicable.
+    if (!empty($PERF->sessionlock['wait'])) {
+        $sessionwait = number_format($PERF->sessionlock['wait'], 3) . ' secs';
+        $info['html'] .= html_writer::tag('li', 'Session wait: ' . $sessionwait, [
+            'class' => 'sessionwait col-sm-4'
+        ]);
+        $info['txt'] .= 'sessionwait: ' . $sessionwait . ' ';
+    }
+
     $info['html'] .= '</ul>';
     $html = '';
     if ($stats = cache_helper::get_stats()) {
@@ -9851,6 +9865,53 @@ function get_performance_info() {
         $info['cachesused'] = '0 / 0 / 0';
         $info['html'] .= '<div class="cachesused">Caches used (hits/misses/sets): 0/0/0</div>';
         $info['txt'] .= 'Caches used (hits/misses/sets): 0/0/0 ';
+    }
+
+    // Display lock information if any.
+    if (!empty($PERF->locks)) {
+        $table = new html_table();
+        $table->attributes['class'] = 'locktimings table table-dark table-sm w-auto table-bordered';
+        $table->head = ['Lock', 'Waited (s)', 'Obtained', 'Held for (s)'];
+        $table->align = ['left', 'right', 'center', 'right'];
+        $table->data = [];
+        $text = 'Locks (waited/obtained/held):';
+        foreach ($PERF->locks as $locktiming) {
+            $row = [];
+            $row[] = s($locktiming->type . '/' . $locktiming->resource);
+            $text .= ' ' . $locktiming->type . '/' . $locktiming->resource . ' (';
+
+            // The time we had to wait to get the lock.
+            $roundedtime = number_format($locktiming->wait, 1);
+            $cell = new html_table_cell($roundedtime);
+            if ($locktiming->wait > 0.5) {
+                $cell->attributes = ['class' => 'bg-warning text-dark'];
+            }
+            $row[] = $cell;
+            $text .= $roundedtime . '/';
+
+            // Show a tick or cross for success.
+            $row[] = $locktiming->success ? '&#x2713;' : '&#x274c;';
+            $text .= ($locktiming->success ? 'y' : 'n') . '/';
+
+            // If applicable, show how long we held the lock before releasing it.
+            if (property_exists($locktiming, 'held')) {
+                $roundedtime = number_format($locktiming->held, 1);
+                $cell = new html_table_cell($roundedtime);
+                if ($locktiming->held > 0.5) {
+                    $cell->attributes = ['class' => 'bg-warning text-dark'];
+                }
+                $row[] = $cell;
+                $text .= $roundedtime;
+            } else {
+                $row[] = '-';
+                $text .= '-';
+            }
+            $text .= ')';
+
+            $table->data[] = $row;
+        }
+        $info['html'] .= html_writer::table($table);
+        $info['txt'] .= $text . '. ';
     }
 
     $info['html'] = '<div class="performanceinfo siteinfo container-fluid px-md-0 overflow-auto pt-3">'.$info['html'].'</div>';
