@@ -366,7 +366,7 @@ All rights reserved.</copyright>
     <location>scssphp</location>
     <name>scssphp</name>
     <description>scssphp is a compiler for SCSS written in PHP.</description>
-    <version>1.10.0</version>
+    <version>1.11.0</version>
     <license>MIT</license>
     <repository>https://github.com/scssphp/scssphp/</repository>
     <copyrights>
@@ -413,7 +413,7 @@ All rights reserved.</copyright>
     <location>maxmind/MaxMind</location>
     <name>MaxMind DB Reader API</name>
     <description>PHP API for reading MaxMind DB files.</description>
-    <version>1.10.1</version>
+    <version>1.11.0</version>
     <license>Apache</license>
     <licenseversion>2.0</licenseversion>
     <repository>https://github.com/maxmind/MaxMind-DB-Reader-php/</repository>
@@ -553,7 +553,7 @@ All rights reserved.</copyright>
     <location>emoji-data</location>
     <name>Emoji data</name>
     <description>Library to parse easily data and sprite sheets for emoji.</description>
-    <version>7.0.2</version>
+    <version>14.0.1</version>
     <license>MIT</license>
     <repository>https://github.com/iamcal/emoji-data/</repository>
     <copyrights>
@@ -585,7 +585,7 @@ All rights reserved.</copyright>
     <location>zipstream</location>
     <name>ZipStream-PHP</name>
     <description>PHP ZIP Streaming Library</description>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <license>MIT</license>
     <repository>https://github.com/maennchen/ZipStream-PHP</repository>
     <copyrights>

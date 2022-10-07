@@ -29,13 +29,6 @@ Feature: Users can view and search database entries
       | data1    | text | Test field name   | Test field description   |
       | data1    | text | Test field 2 name | Test field 2 description |
       | data1    | url  | Test field 3 name | Test field 3 description |
-    And the following "mod_data > templates" exist:
-      | database | name            |
-      | data1    | singletemplate  |
-      | data1    | listtemplate    |
-      | data1    | addtemplate     |
-      | data1    | asearchtemplate |
-      | data1    | rsstemplate     |
 
   @javascript
   Scenario: Students can view, list and search entries
@@ -97,7 +90,8 @@ Feature: Users can view and search database entries
     And I press "Save"
     And I should see "Student original entry"
     And I should see "Tag1" in the "div.tag_list" "css_element"
-    And I follow "Edit"
+    And I open the action menu in "#defaulttemplate-single" "css_element"
+    And I choose "Edit" in the open action menu
     And I should see "Tag1" in the ".form-autocomplete-selection" "css_element"
     And I follow "Cancel"
     And I select "List view" from the "jump" singleselect

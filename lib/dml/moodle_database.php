@@ -897,9 +897,6 @@ abstract class moodle_database {
         // convert table names
         $sql = $this->fix_table_names($sql);
 
-        // Optionally add debug trace to sql as a comment.
-        $sql = $this->add_sql_debugging($sql);
-
         // cast booleans to 1/0 int and detect forbidden objects
         foreach ($params as $key => $value) {
             $this->detect_objects($value);
@@ -910,6 +907,9 @@ abstract class moodle_database {
         $named_count = preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $sql, $named_matches); // :: used in pgsql casts
         $dollar_count = preg_match_all('/\$[1-9][0-9]*/', $sql, $dollar_matches);
         $q_count     = substr_count($sql, '?');
+
+        // Optionally add debug trace to sql as a comment.
+        $sql = $this->add_sql_debugging($sql);
 
         $count = 0;
 
@@ -2352,6 +2352,19 @@ abstract class moodle_database {
      */
     public function sql_order_by_text($fieldname, $numchars=32) {
         return $fieldname;
+    }
+
+    /**
+     * Returns the SQL text to be used to order by columns, standardising the return
+     * pattern of null values across database types to sort nulls first when ascending
+     * and last when descending.
+     *
+     * @param string $fieldname The name of the field we need to sort by.
+     * @param int $sort An order to sort the results in.
+     * @return string The piece of SQL code to be used in your statement.
+     */
+    public function sql_order_by_null(string $fieldname, int $sort = SORT_ASC): string {
+        return $fieldname . ' ' . ($sort == SORT_ASC ? 'ASC' : 'DESC');
     }
 
     /**
