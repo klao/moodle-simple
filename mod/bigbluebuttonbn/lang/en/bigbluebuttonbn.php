@@ -286,11 +286,6 @@ $string['config_hideuserlist_default_description'] = 'If enabled the session use
 $string['config_hideuserlist_editable'] = 'Hide user list can be edited';
 $string['config_hideuserlist_editable_description'] = 'Hide user list by default can be edited when the instance is added or updated.';
 
-$string['config_lockonjoin_default'] = 'Lock on join enabled by default';
-$string['config_lockonjoin_default_description'] = 'If enabled the settings locked by configuration are applied to the user when they join. Lock configuration must be enabled for this to apply.';
-$string['config_lockonjoin_editable'] = 'Lock on join can be edited';
-$string['config_lockonjoin_editable_description'] = 'Lock on join by default can be edited when the instance is added or updated.';
-
 $string['config_experimental_features'] = 'Experimental features';
 $string['config_experimental_features_description'] = 'Configuration for experimental features.';
 
@@ -373,7 +368,6 @@ $string['mod_form_field_disableprivatechat'] = 'Disable private chat';
 $string['mod_form_field_disablepublicchat'] = 'Disable public chat';
 $string['mod_form_field_disablenote'] = 'Disable shared notes';
 $string['mod_form_field_hideuserlist'] = 'Hide user list';
-$string['mod_form_field_lockonjoin'] = 'Lock settings on join';
 $string['mod_form_locksettings'] = 'Lock settings';
 $string['report_join_info']  = 'Has joined the room {$a} time(s)';
 $string['report_play_recording_info']  = 'Has played a recording {$a} time(s)';
@@ -476,6 +470,8 @@ $string['view_message_conference_in_progress'] = 'The session is in progress.';
 $string['view_message_conference_has_ended'] = 'The session has ended.';
 $string['view_message_tab_close'] = 'This tab/window must be closed manually';
 $string['view_message_recordings_disabled'] = 'Recordings are disabled on the server. BigBlueButton activities of type \'Recordings only\' cannot be used.';
+$string['view_message_cron_disabled'] = 'The scheduled task to fetch pending recordings has not been run for a while.
+ Please contact the site administrator with the following information: {$a}.';
 $string['view_message_importrecordings_disabled'] = 'Import recording links is disabled on the server.';
 
 $string['view_groups_selection_warning'] = 'There is a room for each group and you have access to more than one. Be sure to select the correct one.';
