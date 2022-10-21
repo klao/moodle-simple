@@ -70,36 +70,22 @@ if ($action !== '') {
 }
 
 if ($id) {
-    $url->param('id', $id);
-    $PAGE->set_url($url);
-    if (! $cm = get_coursemodule_from_id('data', $id)) {
-        throw new \moodle_exception('invalidcoursemodule');
-    }
-    if (! $course = $DB->get_record('course', array('id'=>$cm->course))) {
-        throw new \moodle_exception('coursemisconf');
-    }
-    if (! $data = $DB->get_record('data', array('id'=>$cm->instance))) {
-        throw new \moodle_exception('invalidcoursemodule');
-    }
-
-} else {
+    list($course, $cm) = get_course_and_cm_from_cmid($id, manager::MODULE);
+    $manager = manager::create_from_coursemodule($cm);
+    $url->param('id', $cm->id);
+} else {   // We must have $d.
+    $instance = $DB->get_record('data', ['id' => $d], '*', MUST_EXIST);
+    $manager = manager::create_from_instance($instance);
+    $cm = $manager->get_coursemodule();
+    $course = get_course($cm->course);
     $url->param('d', $d);
-    $PAGE->set_url($url);
-    if (! $data = $DB->get_record('data', array('id'=>$d))) {
-        throw new \moodle_exception('invalidid', 'data');
-    }
-    if (! $course = $DB->get_record('course', array('id'=>$data->course))) {
-        throw new \moodle_exception('invalidcoursemodule');
-    }
-    if (! $cm = get_coursemodule_from_instance('data', $data->id, $course->id)) {
-        throw new \moodle_exception('invalidcoursemodule');
-    }
 }
 
-require_login($course, true, $cm);
-
-$manager = manager::create_from_coursemodule($cm);
+$PAGE->set_url($url);
+$data = $manager->get_instance();
 $context = $manager->get_context();
+
+require_login($course, true, $cm);
 require_capability('mod/data:managetemplates', $context);
 
 $formimportzip = new data_import_preset_zip_form();
@@ -260,9 +246,15 @@ switch ($mode) {
                 // Print confirmation message.
                 $field = data_get_field_from_id($fid, $data);
 
-                echo $OUTPUT->confirm('<strong>'.$field->name().': '.$field->field->name.'</strong><br /><br />'. get_string('confirmdeletefield','data'),
-                             'field.php?d='.$data->id.'&mode=delete&fid='.$fid.'&confirm=1',
-                             'field.php?d='.$data->id);
+                if ($field->type === 'unknown') {
+                    $fieldtypename = get_string('unknown', 'data');
+                } else {
+                    $fieldtypename = $field->name();
+                }
+                echo $OUTPUT->confirm('<strong>'.$fieldtypename.': '.$field->field->name.'</strong><br /><br />'.
+                            get_string('confirmdeletefield', 'data'),
+                            'field.php?d='.$data->id.'&mode=delete&fid='.$fid.'&confirm=1',
+                            'field.php?d='.$data->id);
 
                 echo $OUTPUT->footer();
                 exit;
@@ -317,6 +309,9 @@ $plugins = core_component::get_plugin_list('datafield');
 $menufield = array();
 
 foreach ($plugins as $plugin=>$fulldir){
+    if (!is_dir($fulldir)) {
+        continue;
+    }
     $menufield[$plugin] = get_string('pluginname', 'datafield_'.$plugin);    //get from language files
 }
 asort($menufield);    //sort in alphabetical order
@@ -360,6 +355,7 @@ if (($mode == 'new') && (!empty($newtype))) { // Adding a new field.
         $table->wrap = array(false,false,false,false);
 
         if ($fff = $DB->get_records('data_fields', array('dataid'=>$data->id),'id')){
+            $missingfieldtypes = [];
             foreach ($fff as $ff) {
 
                 $field = data_get_field($ff, $data);
@@ -378,15 +374,30 @@ if (($mode == 'new') && (!empty($newtype))) { // Adding a new field.
                     'mode'      => 'delete',
                 ));
 
-                $table->data[] = array(
-                    html_writer::link($displayurl, $field->field->name),
-                    $field->image() . '&nbsp;' . $field->name(),
+                // It display a notification when the field type does not exist.
+                $deletelink = html_writer::link($deleteurl, $OUTPUT->pix_icon('t/delete', get_string('delete')));
+                $editlink = html_writer::link($displayurl, $OUTPUT->pix_icon('t/edit', get_string('edit')));
+                if ($field->type === 'unknown') {
+                    $missingfieldtypes[] = $field->field->name;
+                    $fieldnamedata = $field->field->name;
+                    $fieltypedata = $field->field->type;
+                    $fieldlinkdata = $deletelink;
+                } else {
+                    $fieldnamedata = html_writer::link($displayurl, $field->field->name);
+                    $fieltypedata = $field->image() . '&nbsp;' . $field->name();
+                    $fieldlinkdata = $editlink . '&nbsp;' . $deletelink;
+                }
+
+                $table->data[] = [
+                    $fieldnamedata,
+                    $fieltypedata,
                     $field->field->required ? get_string('yes') : get_string('no'),
                     shorten_text($field->field->description, 30),
-                    html_writer::link($displayurl, $OUTPUT->pix_icon('t/edit', get_string('edit'))) .
-                        '&nbsp;' .
-                        html_writer::link($deleteurl, $OUTPUT->pix_icon('t/delete', get_string('delete'))),
-                );
+                    $fieldlinkdata
+                ];
+            }
+            if (!empty($missingfieldtypes)) {
+                echo $OUTPUT->notification(get_string('missingfieldtypes', 'data') . html_writer::alist($missingfieldtypes));
             }
         }
         echo html_writer::table($table);
@@ -438,8 +449,11 @@ if (($mode == 'new') && (!empty($newtype))) { // Adding a new field.
     echo '<input type="submit" class="btn btn-secondary ml-1" value="'.get_string('save', 'data').'" />';
     echo '</div>';
     echo '</form>';
-    echo '</div>';
 
+    // Add a sticky footer.
+    echo $renderer->render_fields_footer($manager);
+
+    echo '</div>';
 }
 
 /// Finish the page

@@ -216,6 +216,25 @@ class template {
     }
 
     /**
+     * Check if a tag is present in the template.
+     *
+     * @param bool $tagname the tag to check (without ##)
+     * @return bool if the tag is present
+     */
+    public function has_tag(string $tagname): bool {
+        return in_array($tagname, $this->tags);
+    }
+
+    /**
+     * Return the current template name.
+     *
+     * @return string the template name
+     */
+    public function get_template_name(): string {
+        return $this->templatename;
+    }
+
+    /**
      * Generate the list of action icons.
      *
      * @return pix_icon[] icon name => pix_icon
@@ -850,7 +869,17 @@ class template {
                         $errors .= $renderer->notification($notification);
                     }
                 }
-                $replacements[] = $errors . $field->display_add_field($entryid, $entrydata);
+                $fielddisplay = '';
+                if ($field->type === 'unknown') {
+                    if ($this->canmanageentries) { // Display notification for users that can manage entries.
+                        $errors .= $renderer->notification(get_string('missingfieldtype', 'data',
+                        (object)['name' => $field->field->name]));
+                    }
+                } else {
+                    $fielddisplay = $field->display_add_field($entryid, $entrydata);
+                }
+
+                $replacements[] = $errors . $fielddisplay;
             }
 
             // Replace the field id tag.

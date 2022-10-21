@@ -54,7 +54,7 @@
     <location>phpspreadsheet</location>
     <name>PhpSpreadsheet</name>
     <description>Library to read, write and create spreadsheet documents in PHP.</description>
-    <version>1.21.0</version>
+    <version>1.25.2</version>
     <license>MIT</license>
     <repository>https://github.com/PHPOffice/PhpSpreadsheet</repository>
     <customised/>
@@ -343,7 +343,7 @@ All rights reserved.</copyright>
     <location>php-css-parser</location>
     <name>PHP-CSS-Parser</name>
     <description>A Parser for CSS Files written in PHP.</description>
-    <version>8.3.1</version>
+    <version>8.4.0</version>
     <license>MIT</license>
     <repository>https://github.com/sabberworm/PHP-CSS-Parser</repository>
     <copyrights>
