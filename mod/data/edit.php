@@ -74,7 +74,7 @@ if (isguestuser()) {
 }
 
 /// Can't use this if there are no fields
-if (has_capability('mod/data:managetemplates', $context)) {
+if ($manager->can_manage_templates()) {
     if (!$manager->has_fields()) {
         redirect($CFG->wwwroot.'/mod/data/field.php?d='.$data->id);  // Redirect to field entry.
     }
@@ -121,6 +121,7 @@ if ($rid) {
     $PAGE->navbar->add(get_string('editentry', 'data'));
 }
 
+$PAGE->add_body_class('mediumwidth');
 $PAGE->set_title($data->name);
 $PAGE->set_heading($course->fullname);
 $PAGE->force_settings_menu(true);

@@ -26,8 +26,8 @@ Feature: Users can preview presets
   Scenario: Preview a user preset as list view template in database
     Given I follow "Presets"
     And I click on "Import" "button"
-    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Choose file" filemanager
-    And I click on "Save" "button"
+    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Preset file" filemanager
+    When I click on "Import preset and apply" "button"
     And I follow "Templates"
     And I click on "Save as preset" "button"
     And I set the field "Name" to "Saved preset by teacher1"
@@ -72,8 +72,8 @@ Feature: Users can preview presets
   Scenario: Preview a user preset as single view template in database
     Given I follow "Presets"
     And I click on "Import" "button"
-    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Choose file" filemanager
-    And I click on "Save" "button"
+    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Preset file" filemanager
+    When I click on "Import preset and apply" "button"
     And I follow "Templates"
     And I click on "Save as preset" "button"
     And I set the field "Name" to "Saved preset by teacher1"
@@ -138,16 +138,17 @@ Feature: Users can preview presets
   Scenario: Apply plugin preset from preview in database
     Given I follow "Presets"
     And I click on "Image gallery" "link"
-    When I click on "Use preset" "button"
+    When I click on "Use a preset" "button"
     Then I should see "image"
+    And I should see "image"
     And I should see "title"
 
   @javascript @_file_upload
   Scenario: Apply user preset from preview in database
     Given I follow "Presets"
     And I click on "Import" "button"
-    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Choose file" filemanager
-    And I click on "Save" "button"
+    And I upload "mod/data/tests/fixtures/behat_preset.zip" file to "Preset file" filemanager
+    When I click on "Import preset and apply" "button"
     And I follow "Templates"
     And I click on "Save as preset" "button"
     And I set the field "Name" to "Saved preset by teacher1"
@@ -155,5 +156,5 @@ Feature: Users can preview presets
     And I click on "Save" "button" in the "Save all fields and templates as preset" "dialogue"
     When I follow "Presets"
     And I click on "Saved preset by teacher1" "link"
-    And I click on "Use preset" "button"
+    And I click on "Use a preset" "button"
     Then I should see "My URL field"

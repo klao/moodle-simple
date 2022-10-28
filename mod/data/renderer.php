@@ -63,17 +63,17 @@ class mod_data_renderer extends plugin_renderer_base {
         $newfields = $params->importfields;
         $currentfields = $params->currentfields;
 
-        $html  = html_writer::start_tag('div', ['class'=>'presetmapping']);
-        $html .= html_writer::start_tag('form', ['method'=>'post', 'action'=>'']);
+        $html = html_writer::start_tag('div', ['class' => 'presetmapping']);
+        $html .= html_writer::start_tag('form', ['method' => 'post', 'action' => '']);
         $html .= html_writer::start_tag('div');
-        $html .= html_writer::empty_tag('input', ['type'=>'hidden', 'name'=>'action', 'value'=>'finishimport']);
-        $html .= html_writer::empty_tag('input', ['type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()]);
-        $html .= html_writer::empty_tag('input', ['type'=>'hidden', 'name'=>'d', 'value'=>$datamodule->id]);
+        $html .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'finishimport']);
+        $html .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+        $html .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'd', 'value' => $datamodule->id]);
 
         $inputselector = $importer->get_preset_selector();
         $html .= html_writer::empty_tag(
-            'input',
-            ['type'=>'hidden', 'name'=> $inputselector['name'], 'value' => $inputselector['value']]
+                'input',
+                ['type' => 'hidden', 'name' => $inputselector['name'], 'value' => $inputselector['value']]
         );
 
         if (!empty($newfields)) {
@@ -154,6 +154,9 @@ class mod_data_renderer extends plugin_renderer_base {
      */
     public function render_fields_action_bar(\mod_data\output\fields_action_bar $actionbar): string {
         $data = $actionbar->export_for_template($this);
+        $data['title'] = get_string('nofields', 'mod_data');
+        $data['intro'] = get_string('createfields', 'mod_data');
+        $data['noitemsimgurl'] = $this->output->image_url('fields_zero_state', 'mod_data')->out();
         return $this->render_from_template('mod_data/fields_action_bar', $data);
     }
 
@@ -233,18 +236,19 @@ class mod_data_renderer extends plugin_renderer_base {
      *
      * @return string The HTML output
      */
-    public function render_zero_state(\mod_data\manager $manager): string {
+    public function render_database_zero_state(\mod_data\manager $manager): string {
         $actionbar = new \mod_data\output\zero_state_action_bar($manager);
         $data = $actionbar->export_for_template($this);
         if (empty($data)) {
             // No actions for the user.
             $data['title'] = get_string('activitynotready');
             $data['intro'] = get_string('comebacklater');
+            $data['noitemsimgurl'] = $this->output->image_url('noentries_zero_state', 'mod_data')->out();
         } else {
             $data['title'] = get_string('startbuilding', 'mod_data');
-            $data['intro'] = get_string('createfields', 'mod_data');
+            $data['intro'] = get_string('createactivity', 'mod_data');
+            $data['noitemsimgurl'] = $this->output->image_url('view_zero_state', 'mod_data')->out();
         }
-        $data['noitemsimgurl'] = $this->output->image_url('nofields', 'mod_data')->out();
 
         return $this->render_from_template('mod_data/zero_state', $data);
     }
@@ -259,8 +263,47 @@ class mod_data_renderer extends plugin_renderer_base {
     public function render_empty_database(\mod_data\manager $manager): string {
         $actionbar = new \mod_data\output\empty_database_action_bar($manager);
         $data = $actionbar->export_for_template($this);
-        $data['noitemsimgurl'] = $this->output->image_url('nofields', 'mod_data')->out();
+        $data['noitemsimgurl'] = $this->output->image_url('view_zero_state', 'mod_data')->out();
 
         return $this->render_from_template('mod_data/view_noentries', $data);
+    }
+
+    /**
+     * Renders the action bar for the zero state (no fields created) page.
+     *
+     * @param \mod_data\manager $manager The manager instance.
+     *
+     * @return string The HTML output
+     */
+    public function render_fields_zero_state(\mod_data\manager $manager): string {
+        $data = [
+            'noitemsimgurl' => $this->output->image_url('fields_zero_state', 'mod_data')->out(),
+            'title' => get_string('nofields', 'mod_data'),
+            'intro' => get_string('createfields', 'mod_data'),
+            ];
+        if ($manager->can_manage_templates()) {
+            $actionbar = new \mod_data\output\action_bar($manager->get_instance()->id, $this->page->url);
+            $createfieldbutton = $actionbar->get_create_fields();
+            $data['createfieldbutton'] = $createfieldbutton->export_for_template($this);
+        }
+
+        return $this->render_from_template('mod_data/zero_state', $data);
+    }
+
+    /**
+     * Renders the action bar for the templates zero state (no fields created) page.
+     *
+     * @param \mod_data\manager $manager The manager instance.
+     *
+     * @return string The HTML output
+     */
+    public function render_templates_zero_state(\mod_data\manager $manager): string {
+        $actionbar = new \mod_data\output\zero_state_action_bar($manager);
+        $data = $actionbar->export_for_template($this);
+        $data['title'] = get_string('notemplates', 'mod_data');
+        $data['intro'] = get_string('createtemplates', 'mod_data');
+        $data['noitemsimgurl'] = $this->output->image_url('templates_zero_state', 'mod_data')->out();
+
+        return $this->render_from_template('mod_data/zero_state', $data);
     }
 }

@@ -32,6 +32,9 @@ class action_bar {
     /** @var int $id The database module id. */
     private $id;
 
+    /** @var int $cmid The database course module id. */
+    private $cmid;
+
     /** @var moodle_url $currenturl The URL of the current page. */
     private $currenturl;
 
@@ -43,6 +46,8 @@ class action_bar {
      */
     public function __construct(int $id, moodle_url $pageurl) {
         $this->id = $id;
+        [$course, $cm] = get_course_and_cm_from_instance($this->id, 'data');
+        $this->cmid = $cm->id;
         $this->currenturl = $pageurl;
     }
 
@@ -54,13 +59,19 @@ class action_bar {
      * @param bool $hasexportpreset Whether the export as preset button element should be rendered.
      * @return string The HTML code for the action bar.
      */
-    public function get_fields_action_bar(bool $hasfieldselect = false, bool $hassaveaspreset = false,
-            bool $hasexportpreset = false): string {
+    public function get_fields_action_bar(
+        bool $hasfieldselect = false,
+        bool $hassaveaspreset = false,
+        bool $hasexportpreset = false
+    ): string {
         global $PAGE, $DB;
 
-        $createfieldlink = new moodle_url('/mod/data/field.php', ['d' => $this->id]);
+        $createfieldlink = new moodle_url('/mod/data/field.php', ['id' => $this->cmid]);
+        $presetslink = new moodle_url('/mod/data/preset.php', ['id' => $this->cmid]);
+
         $menu = [
             $createfieldlink->out(false) => get_string('managefields', 'mod_data'),
+            $presetslink->out(false) => get_string('usestandard', 'mod_data'),
         ];
 
         $selected = $createfieldlink->out(false);
@@ -70,19 +81,7 @@ class action_bar {
 
         $fieldselect = null;
         if ($hasfieldselect) {
-            // Get the list of possible fields (plugins).
-            $plugins = \core_component::get_plugin_list('datafield');
-            $menufield = [];
-
-            foreach ($plugins as $plugin => $fulldir) {
-                $menufield[$plugin] = get_string('pluginname', "datafield_{$plugin}");
-            }
-            asort($menufield);
-
-            $fieldselecturl = new moodle_url('/mod/data/field.php', ['d' => $this->id, 'mode' => 'new']);
-            $fieldselect = new \single_select($fieldselecturl, 'newtype', $menufield, null, get_string('newfield', 'data'),
-                'fieldform');
-            $fieldselect->set_label(get_string('newfield', 'mod_data'), ['class' => 'sr-only']);
+            $fieldselect = $this->get_create_fields();
         }
 
         $saveaspresetbutton = null;
@@ -105,10 +104,41 @@ class action_bar {
             }
         }
         $renderer = $PAGE->get_renderer('mod_data');
-        $fieldsactionbar = new fields_action_bar($this->id, $urlselect, $fieldselect, $saveaspresetbutton,
-            $exportpresetbutton);
+        $fieldsactionbar = new fields_action_bar($this->id, $urlselect, null, $saveaspresetbutton,
+            $exportpresetbutton, $fieldselect);
 
         return $renderer->render_fields_action_bar($fieldsactionbar);
+    }
+
+    /**
+     * Generate the output for the create a new field action menu.
+     *
+     * @return \action_menu Action menu to create a new field
+     */
+    public function get_create_fields(): \action_menu {
+        // Get the list of possible fields (plugins).
+        $plugins = \core_component::get_plugin_list('datafield');
+        $menufield = [];
+        foreach ($plugins as $plugin => $fulldir) {
+            $menufield[$plugin] = get_string('pluginname', "datafield_{$plugin}");
+        }
+        asort($menufield);
+
+        $fieldselect = new \action_menu();
+        $fieldselect->set_menu_trigger(get_string('newfield', 'mod_data'), 'btn btn-secondary');
+        $fieldselectparams = ['d' => $this->id, 'mode' => 'new'];
+        foreach ($menufield as $fieldtype => $fieldname) {
+            $fieldselectparams['newtype'] = $fieldtype;
+            $fieldselect->add(new \action_menu_link(
+                new \moodle_url('/mod/data/field.php', $fieldselectparams),
+                new \pix_icon('field/' . $fieldtype, $fieldname, 'data'),
+                $fieldname,
+                false
+            ));
+        }
+        $fieldselect->set_additional_classes('singlebutton');
+
+        return $fieldselect;
     }
 
     /**
@@ -207,8 +237,10 @@ class action_bar {
         global $PAGE;
 
         $renderer = $PAGE->get_renderer('mod_data');
-        $presetsactionbar = new presets_action_bar($this->id);
-
+        if (!has_capability('mod/data:managetemplates', \context_module::instance($this->cmid))) {
+            return '';
+        }
+        $presetsactionbar = new presets_action_bar($this->cmid);
         return $renderer->render_presets_action_bar($presetsactionbar);
     }
 

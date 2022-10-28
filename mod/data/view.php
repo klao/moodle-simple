@@ -225,6 +225,7 @@ if ($mode == 'asearch') {
     $PAGE->navbar->add(get_string('search'));
 }
 
+$PAGE->add_body_class('mediumwidth');
 $PAGE->set_title($title);
 $PAGE->set_heading($course->fullname);
 $PAGE->force_settings_menu(true);
@@ -242,7 +243,7 @@ echo $OUTPUT->header();
 if (!$manager->has_fields()) {
     // It's a brand-new database. There are no fields.
     $renderer = $manager->get_renderer();
-    echo $renderer->render_zero_state($manager);
+    echo $renderer->render_database_zero_state($manager);
     echo $OUTPUT->footer();
     // Don't check the rest of the options. There is no field, there is nothing else to work with.
     exit;

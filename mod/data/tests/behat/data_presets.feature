@@ -63,10 +63,10 @@ Feature: Users can view and manage data presets
     And I should see "Delete"
     # Teachers can't delete the presets they haven't created.
     And I should not see "Actions" in the "Saved preset 1" "table_row"
-    # The "Use preset" button should be enabled only when a preset is selected.
-    And the "Use preset" "button" should be disabled
+    # The "Use a preset" button should be enabled only when a preset is selected.
+    And the "Use a preset" "button" should be disabled
     And I click on "fullname" "radio" in the "Image gallery" "table_row"
-    And the "Use preset" "button" should be enabled
+    And the "Use a preset" "button" should be enabled
 
   @javascript
   Scenario: Only users with the viewalluserpresets capability can see presets created by other users
@@ -286,7 +286,7 @@ Feature: Users can view and manage data presets
     And I should see "My funny description goes here"
     And I should see "Test field name"
     And I should see "This is a short text"
-    Then "Use preset" "button" should exist
+    Then "Use a preset" "button" should exist
 
   @javascript
   Scenario: Teachers can export any saved preset
@@ -301,3 +301,20 @@ Feature: Users can view and manage data presets
     And I open the action menu in "Saved preset 1" "table_row"
     And I should see "Export"
     And following "Export" "link" in the "Saved preset 1" "table_row" should download between "1" and "5000" bytes
+
+  @javascript @_file_upload
+  Scenario Outline: Admins and Teachers can load a preset from a file
+    Given I am on the "Mountain landscapes" "data activity" page logged in as <user>
+    When I follow "Presets"
+    Then I click on "Import" "link"
+    And I upload "mod/data/tests/fixtures/image_gallery_preset.zip" file to "Preset file" filemanager
+    Then I click on "Import preset and apply" "button" in the ".modal-dialog" "css_element"
+    Then I should see "The preset has been successfully applied."
+    # I am on the field page.
+    And I should see "Manage fields"
+    Then I should see "The preset has been successfully applied."
+
+    Examples:
+      | user     |
+      | admin    |
+      | teacher1 |

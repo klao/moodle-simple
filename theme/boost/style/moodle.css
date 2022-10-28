@@ -9860,7 +9860,6 @@ a.text-dark:hover, a.text-dark:focus {
  */
 /* core.less */
 #region-main {
-  overflow-x: auto;
   overflow-y: visible;
   background-color: #fff; }
 
@@ -20578,6 +20577,13 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
   .pagelayout-standard #page.drawers .footer-popover,
   body.limitedwidth #page.drawers .footer-popover {
     max-width: 830px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 0.5rem; }
+  body.mediumwidth #page.drawers .main-inner {
+    max-width: 1120px; }
+  body.mediumwidth #page.drawers .footer-popover {
+    max-width: 1120px;
     width: 100%;
     margin: 0 auto;
     border-radius: 0.5rem; }
