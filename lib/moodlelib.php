@@ -563,6 +563,21 @@ define('EMAIL_VIA_ALWAYS', 1);
  */
 define('EMAIL_VIA_NO_REPLY_ONLY', 2);
 
+/**
+ * Contact site support form/link disabled.
+ */
+define('CONTACT_SUPPORT_DISABLED', 0);
+
+/**
+ * Contact site support form/link only available to authenticated users.
+ */
+define('CONTACT_SUPPORT_AUTHENTICATED', 1);
+
+/**
+ * Contact site support form/link available to anyone visiting the site.
+ */
+define('CONTACT_SUPPORT_ANYONE', 2);
+
 // PARAMETER HANDLING.
 
 /**
@@ -3396,6 +3411,11 @@ function update_user_login_times() {
 
     if (isguestuser()) {
         // Do not update guest access times/ips for performance.
+        return true;
+    }
+
+    if (defined('USER_KEY_LOGIN') && USER_KEY_LOGIN === true) {
+        // Do not update user login time when using user key login.
         return true;
     }
 
