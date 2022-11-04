@@ -1649,6 +1649,7 @@ $string['phone'] = 'Phone';
 $string['phone1'] = 'Phone';
 $string['phone2'] = 'Mobile phone';
 $string['phpinfo'] = 'PHP info';
+$string['picture'] = 'Picture';
 $string['pictureof'] = 'Picture of {$a}';
 $string['pictureofuser'] = 'User picture';
 $string['placeholdertypeorselect'] = 'Type or select...';
@@ -1939,6 +1940,8 @@ $string['selectedcategories'] = 'Selected categories';
 $string['selectednowmove'] = '{$a} files selected for moving. Now go into the destination folder and press \'Move files to here\'';
 $string['selectfiles'] = 'Select files';
 $string['selectfiltertype'] = 'Select';
+$string['selectgroupsseparate'] = 'Select separate groups';
+$string['selectgroupsvisible'] = 'Select visible groups';
 $string['selectitem'] = 'Select \'{$a}\'';
 $string['selectmoduletoviewhelp'] = 'Select an activity or resource to view its help.
 
