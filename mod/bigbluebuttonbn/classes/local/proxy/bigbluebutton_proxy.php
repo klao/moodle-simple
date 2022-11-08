@@ -41,6 +41,16 @@ use stdClass;
 class bigbluebutton_proxy extends proxy_base {
 
     /**
+     * Minimum poll interval for remote bigbluebutton server in seconds.
+     */
+    const MIN_POLL_INTERVAL = 2;
+
+    /**
+     * Default poll interval for remote bigbluebutton server in seconds.
+     */
+    const DEFAULT_POLL_INTERVAL = 5;
+
+    /**
      * Builds and returns a url for joining a bigbluebutton meeting.
      *
      * @param string $meetingid
@@ -245,10 +255,12 @@ class bigbluebutton_proxy extends proxy_base {
 
         $bbbcompletion = new custom_completion($cm, $userid);
         if ($bbbcompletion->get_overall_completion_state()) {
-            mtrace("Completion succeeded for user $userid");
+            mtrace("Completion for userid $userid and bigbluebuttonid {$bigbluebuttonbn->id} updated.");
             $completion->update_state($cm, COMPLETION_COMPLETE, $userid, true);
         } else {
-            mtrace("Completion did not succeed for user $userid");
+            // Still update state to current value (prevent unwanted caching).
+            $completion->update_state($cm, COMPLETION_UNKNOWN, $userid);
+            mtrace("Activity not completed for userid $userid and bigbluebuttonid {$bigbluebuttonbn->id}.");
         }
     }
 
@@ -489,5 +501,21 @@ class bigbluebutton_proxy extends proxy_base {
         $hends = explode('.', $h);
         $hendslength = count($hends);
         return ($hends[$hendslength - 1] == 'com' && $hends[$hendslength - 2] == 'blindsidenetworks');
+    }
+
+    /**
+     * Get the poll interval as it is set in the configuration
+     *
+     * If configuration value is under the threshold of {@see self::MIN_POLL_INTERVAL},
+     * then return the {@see self::MIN_POLL_INTERVAL} value.
+     *
+     * @return int the poll interval in seconds
+     */
+    public static function get_poll_interval(): int {
+        $pollinterval = intval(config::get('poll_interval'));
+        if ($pollinterval < self::MIN_POLL_INTERVAL) {
+            $pollinterval = self::MIN_POLL_INTERVAL;
+        }
+        return $pollinterval;
     }
 }
