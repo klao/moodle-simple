@@ -1108,7 +1108,12 @@ function page_get_doc_link_path(moodle_page $page) {
  */
 function validate_email($address) {
     global $CFG;
-    require_once($CFG->libdir.'/phpmailer/moodle_phpmailer.php');
+
+    if ($address === null || $address === false || $address === '') {
+        return false;
+    }
+
+    require_once("{$CFG->libdir}/phpmailer/moodle_phpmailer.php");
 
     return moodle_phpmailer::validateAddress($address) && !preg_match('/[<>]/', $address);
 }
@@ -1429,6 +1434,11 @@ function reset_text_filters_cache($phpunitreset = false) {
  */
 function format_string($string, $striplinks = true, $options = null) {
     global $CFG, $PAGE;
+
+    if ($string === '' || is_null($string)) {
+        // No need to do any filters and cleaning.
+        return '';
+    }
 
     // We'll use a in-memory cache here to speed up repeated strings.
     static $strcache = false;
